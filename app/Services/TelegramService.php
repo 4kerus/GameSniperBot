@@ -18,6 +18,11 @@ class TelegramService
         }
     }
 
+
+    public function isUserAdmin(){
+        return false;
+    }
+
     public function getUserChats(TelegramUser $user)
     {
         return $user->chats;

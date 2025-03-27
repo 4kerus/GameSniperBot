@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Chat;
+use App\Models\ChatFaceitNick;
 use App\Models\FaceitMatch;
 use App\Models\FaceitNick;
 use App\Models\NotifiedMatchFaceit;
@@ -12,19 +13,25 @@ class FaceitService
 {
     public function getEloByNick($nick)
     {
-        return FaceitNick::where('nick', $nick)->first();
+        return FaceitNick::where('nick', $nick)->value('elo');
+    }
+
+
+    public function getChatNicksArray(){
+
     }
 
     public function getChatEloList(Chat $chat)
     {
-        return $chat->chatFaceitNicks()->with('faceitNick')->get()->pluck('faceitNick.nick');
+//        return ChatFaceitNick::where('chat_id', $chat->id)->pluck('faceit_nick');
     }
+
 
     public function getNickByUserInChat(TelegramUser $user, Chat $chat)
     {
-        return $chat->chatFaceitNicks()->whereHas('faceitNick.trackings', function ($query) use ($user) {
-            $query->where('telegram_user_id', $user->id);
-        })->with('faceitNick')->first();
+        return ChatFaceitNick::where('chat_id', $chat->id)
+            ->where('telegram_user_id', $user->id)
+            ->value('faceit_nick') ?: null;
     }
 
     public function isMatchNotifiedInChat(FaceitMatch $match, Chat $chat): bool
@@ -42,23 +49,31 @@ class FaceitService
 
     public function notifyMatchInChat(FaceitMatch $match, Chat $chat)
     {
-        if (!$this->isMatchNotifiedInChat($match, $chat)) {
-            return $this->setMatchNotifiedInChat($match, $chat);
-        }
+        return NotifiedMatchFaceit::firstOrCreate([
+            'faceit_match_id' => $match->id,
+            'chat_id' => $chat->id,
+        ]);
     }
+
 
     public function setUserNick(TelegramUser $user, $nick)
     {
-        return FaceitNick::firstOrCreate(['nick' => $nick])->trackings()->updateOrCreate([
-            'telegram_user_id' => $user->id
-        ]);
+        return ChatFaceitNick::updateOrCreate(
+            ['chat_id' => $user->telegram_id, 'telegram_user_id' => $user->id],
+            ['faceit_nick' => $nick]
+        );
+
     }
 
     public function setUserNickInChat(TelegramUser $user, Chat $chat, $nick)
     {
-        $faceitNick = FaceitNick::firstOrCreate(['nick' => $nick]);
-        return $chat->chatFaceitNicks()->updateOrCreate([
-            'faceit_nick_id' => $faceitNick->id
-        ]);
+        return ChatFaceitNick::updateOrCreate(
+            ['chat_id' => $chat->id, 'telegram_user_id' => $user->id],
+            ['faceit_nick' => $nick]
+        );
     }
+
+
+
+
 }

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('username')->nullable()->unique();
             $table->string('first_name');
             $table->string('last_name')->nullable();
-            $table->string('faceit_nick')->nullable();
             $table->string('phone_number')->nullable();
             $table->string('language_code')->nullable();
             $table->boolean('is_premium')->default(false);

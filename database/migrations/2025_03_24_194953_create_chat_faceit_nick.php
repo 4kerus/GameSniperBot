@@ -11,11 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('chat_faceit_nick', function (Blueprint $table) {
+        Schema::create('chat_faceit_nicks', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(\App\Models\Chat::class);
-            $table->foreignIdFor(\App\Models\FaceitNick::class);
+            $table->unsignedBigInteger('chat_id');
+            $table->unsignedBigInteger('telegram_user_id');
+            $table->string('faceit_nick');
             $table->timestamps();
+
+            $table->foreign('chat_id')->references('id')->on('chats')->onDelete('cascade');
+            $table->foreign('telegram_user_id')->references('id')->on('telegram_users')->onDelete('cascade');
+
+            $table->unique(['chat_id', 'telegram_user_id']);
         });
     }
 
@@ -24,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('chat_faceit_nick');
+        Schema::dropIfExists('chat_faceit_nicks');
     }
 };

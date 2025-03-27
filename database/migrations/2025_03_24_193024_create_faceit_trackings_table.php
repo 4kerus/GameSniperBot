@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('faceit_trackings', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(\App\Models\TelegramUser::class);
-            $table->foreignIdFor(\App\Models\FaceitNick::class);
+            $table->string("nick");
             $table->timestamps();
         });
     }

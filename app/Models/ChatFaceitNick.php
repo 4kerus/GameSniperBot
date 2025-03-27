@@ -9,15 +9,15 @@ class ChatFaceitNick extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['chat_id', 'faceit_nick_id'];
+    protected $fillable = ['chat_id', 'telegram_user_id', 'faceit_nick'];
 
     public function chat()
     {
         return $this->belongsTo(Chat::class);
     }
 
-    public function faceitNick()
+    public function user()
     {
-        return $this->belongsTo(FaceitNick::class);
+        return $this->belongsTo(TelegramUser::class, 'telegram_user_id');
     }
 }

@@ -1,7 +1,10 @@
 <?php
 
+use App\Telegram\Commands\FaceitWhoCommand;
 use App\Telegram\Commands\GetEloCommand;
+use App\Telegram\Commands\SetNickCommand;
 use App\Telegram\Commands\StartCommand;
+use App\Telegram\Commands\TrackerCommand;
 use Telegram\Bot\Commands\HelpCommand;
 
 return [
@@ -43,6 +46,11 @@ return [
             'commands' => [
                 StartCommand::class,
                 GetEloCommand::class,
+                SetNickCommand::class,
+                FaceitWhoCommand::class,
+                TrackerCommand::class,
+
+
             ],
         ],
 
